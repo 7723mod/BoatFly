@@ -28,6 +28,7 @@
 		"minecraft": ">=1.21.4",
 		"java": ">=21",
 		"fabric-api": "*"
+		“sources”:"https://github.com/7723mod/BoatFly"
 	},
 	"suggests": {
 		"another-mod": "*"
