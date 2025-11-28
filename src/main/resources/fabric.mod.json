@@ -1,36 +1,36 @@
 {
-	"schemaVersion": 1,
-	"id": "boatfly",
-	"version": "${version}",
-	"name": "Boat Fly",
-	"description": "Allows you to Fly in a Boat and Change the speed of the boat",
-	"authors": [
-		"Eric Gilerson", 
-		"HSSkyBoy"
-	],
-	"contact": {
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/boatfly/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"com.boatfly.BoatFly"
-		],
-		"client": [
-			"com.boatfly.BoatFlyClient"
-		]
-	},
-	"mixins": [
-	],
-	"depends": {
-		"fabricloader": ">=0.16.0",
-		"minecraft": ">=1.21.4",
-		"java": ">=21",
-		"fabric-api": "*"
-		“sources”:"https://github.com/7723mod/BoatFly"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+  "schemaVersion": 1,
+  "id": "boatfly",
+  "version": "${version}",
+  "name": "Boat Fly",
+  "description": "Allows you to Fly in a Boat and Change the speed of the boat",
+  "authors": [
+    "Eric Gilerson",
+    "HSSkyBoy"
+  ],
+  "contact": {
+    "sources": "https://github.com/7723mod/BoatFly"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/boatfly/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.boatfly.BoatFly"
+    ],
+    "client": [
+      "com.boatfly.BoatFlyClient"
+    ]
+  },
+  "mixins": [
+  ],
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "minecraft": ">=1.21.8",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
 }
