@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "boatfly",
   "version": "${version}",
-  "name": "Boat Fly",
+  "name": "BoatFly",
   "description": "Allows you to Fly in a Boat and Change the speed of the boat",
   "authors": [
     "Eric Gilerson",
@@ -26,7 +26,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.17.0",
-    "minecraft": ">=1.21.8",
+    "minecraft": ">=1.21.9",
     "java": ">=21",
     "fabric-api": "*"
   },

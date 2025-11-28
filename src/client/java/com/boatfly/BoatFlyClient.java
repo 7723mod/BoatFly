@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.util.Identifier;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
@@ -37,6 +38,8 @@ public class BoatFlyClient implements ClientModInitializer {
     private static final double JUMP_VELOCITY = 0.3;
     private static final double MIN_SPEED = 0.0;
 
+    private static final KeyBinding.Category KEY_CATEGORY = new KeyBinding.Category(Identifier.of(MOD_ID, "main"));
+
     @Override
     public void onInitializeClient() {
         // 註冊按鍵綁定
@@ -44,27 +47,24 @@ public class BoatFlyClient implements ClientModInitializer {
                 "key." + MOD_ID + ".toggle_fly",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_B,
-                "category." + MOD_ID + ".main"
+                KEY_CATEGORY
         ));
-
         increaseSpeedKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key." + MOD_ID + ".increase_speed",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_I,
-                "category." + MOD_ID + ".main"
+                KEY_CATEGORY
         ));
-
         decreaseSpeedKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key." + MOD_ID + ".decrease_speed",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_O,
-                "category." + MOD_ID + ".main"
+                KEY_CATEGORY
         ));
 
-        // 註冊客戶端 Tick 事件監聽器
+        // 註冊用戶端 Tick 事件監聽器
         ClientTickEvents.END_CLIENT_TICK.register(this::onClientTick);
-
-        // 註冊客戶端指令 (使用 Fabric API v2)
+        // 註冊用戶端指令 (使用 Fabric API v2)
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             LiteralArgumentBuilder<FabricClientCommandSource> command = ClientCommandManager.literal("boatspeed")
                     .then(ClientCommandManager.argument("speed", FloatArgumentType.floatArg((float) MIN_SPEED))
@@ -79,10 +79,6 @@ public class BoatFlyClient implements ClientModInitializer {
         });
     }
 
-    /**
-     * 在每個客戶端 tick 結束時調用此方法，處理所有邏輯。
-     * @param client MinecraftClient 實例
-     */
     private void onClientTick(MinecraftClient client) {
         // 確保玩家實例存在，否則不執行
         if (client.player == null) return;
@@ -92,43 +88,32 @@ public class BoatFlyClient implements ClientModInitializer {
             isBoatFlyEnabled = !isBoatFlyEnabled;
             if (isBoatFlyEnabled) {
                 changeSpeed(DEFAULT_SPEED);
-                if (client.player != null) {
-                    client.player.sendMessage(Text.translatable("message." + MOD_ID + ".fly_enabled", String.format("%.2f", currentBoatVelocity)), false);
-                }
+                client.player.sendMessage(Text.translatable("message." + MOD_ID + ".fly_enabled", String.format("%.2f", currentBoatVelocity)), false);
             } else {
-                if (client.player != null) {
-                    client.player.sendMessage(Text.translatable("message." + MOD_ID + ".fly_disabled"), false);
-                }
+                client.player.sendMessage(Text.translatable("message." + MOD_ID + ".fly_disabled"), false);
             }
         }
 
         // 若功能未啟用，直接返回
-        if (!isBoatFlyEnabled) {
-            return;
-        }
+        if (!isBoatFlyEnabled) return;
 
         // 處理增加速度按鍵
         if (increaseSpeedKey.wasPressed()) {
             changeSpeed(currentBoatVelocity + SPEED_INCREMENT);
-            if (client.player != null) {
-                client.player.sendMessage(Text.translatable("message." + MOD_ID + ".speed_changed", String.format("%.2f", currentBoatVelocity)), false);
-            }
+            client.player.sendMessage(Text.translatable("message." + MOD_ID + ".speed_changed", String.format("%.2f", currentBoatVelocity)), false);
         }
 
         // 處理降低速度按鍵
         if (decreaseSpeedKey.wasPressed()) {
             if (currentBoatVelocity > MIN_SPEED) {
                 changeSpeed(currentBoatVelocity + SPEED_DECREMENT);
-                if (client.player != null) {
-                    client.player.sendMessage(Text.translatable("message." + MOD_ID + ".speed_changed", String.format("%.2f", currentBoatVelocity)), false);
-                }
+                client.player.sendMessage(Text.translatable("message." + MOD_ID + ".speed_changed", String.format("%.2f", currentBoatVelocity)), false);
             }
         }
-        
-        if (client.player == null || !client.player.hasVehicle()) {
-            return;
-        }
+
+        if (!client.player.hasVehicle()) return;
         Entity vehicle = client.player.getVehicle();
+        if (vehicle == null) return;
 
         // 處理跳躍鍵 (控制垂直向上速度)
         if (client.options.jumpKey.isPressed()) {
@@ -144,22 +129,12 @@ public class BoatFlyClient implements ClientModInitializer {
         }
     }
 
-    /**
-     * 改變船的速度設定值，並計算相應的速度乘數。
-     * @param newSpeed 新的目標速度（單位：blocks/s）
-     */
     private void changeSpeed(double newSpeed) {
         currentBoatVelocity = Math.max(MIN_SPEED, newSpeed);
         boatSpeedMultiplier = calculateMultiplier(currentBoatVelocity);
-
         LOGGER.info("Boat speed set to {} b/s, multiplier is {}.", String.format("%.2f", currentBoatVelocity), String.format("%.5f", boatSpeedMultiplier));
     }
 
-    /**
-     * 根據目標速度計算一個內部乘數。
-     * @param velocity 目標速度
-     * @return 計算出的速度乘數
-     */
     private double calculateMultiplier(double velocity) {
         // f(v) = (-5.33893 * (ln(v - 8 + 11.9072))^(-3.31832) + 1.26253)^(0.470998)
         if (velocity <= 0) return 0;

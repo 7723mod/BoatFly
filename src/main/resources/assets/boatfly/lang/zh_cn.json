@@ -1,5 +1,5 @@
 {
-  "category.boatfly.main": "Boat Fly",
+  "key.category.boatfly.main": "Boat Fly",
   "key.boatfly.toggle_fly": "切换船只飞行",
   "key.boatfly.increase_speed": "增加船只速度",
   "key.boatfly.decrease_speed": "降低船只速度",
