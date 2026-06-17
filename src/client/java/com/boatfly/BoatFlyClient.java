@@ -69,6 +69,12 @@ public class BoatFlyClient implements ClientModInitializer {
         // 註冊用戶端指令 (使用 Fabric API v2)
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             LiteralArgumentBuilder<FabricClientCommandSource> command = ClientCommands.literal("boatspeed")
+                    .then(ClientCommands.literal("reset")
+                            .executes(context -> {
+                                changeSpeed(DEFAULT_SPEED);
+                                context.getSource().sendFeedback(Component.translatable("message." + MOD_ID + ".speed_changed", String.format("%.2f", currentBoatVelocity)));
+                                return 1;
+                            }))
                     .then(ClientCommands.argument("speed", FloatArgumentType.floatArg((float) MIN_SPEED))
                             .executes(context -> {
                                 float speedValue = FloatArgumentType.getFloat(context, "speed");
